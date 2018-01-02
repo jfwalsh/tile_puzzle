@@ -1,0 +1,595 @@
+
+
+Solution found [1]:
+
+Tile position 0 : Up      Unique Tile ID: 2
+    ArrowIn  Male  
+    Cross    Female
+    Round    Female
+    ArrowIn  Male  
+
+Tile position 1 : Up      Unique Tile ID: 12
+    Round    Male  
+    Round    Female
+    ArrowIn  Female
+    Cross    Male  
+
+Tile position 2 : Up      Unique Tile ID: 10
+    ArrowIn  Male  
+    ArrowIn  Female
+    ArrowOut Female
+    Cross    Male  
+
+Tile position 3 : Up      Unique Tile ID: 5
+    Round    Male  
+    Cross    Female
+    Round    Female
+    ArrowIn  Male  
+
+Tile position 4 : Up      Unique Tile ID: 0
+    Round    Male  
+    ArrowOut Female
+    Round    Female
+    Round    Male  
+
+Tile position 5 : Up      Unique Tile ID: 4
+    Round    Male  
+    ArrowIn  Female
+    Cross    Female
+    ArrowIn  Male  
+
+Tile position 6 : Up      Unique Tile ID: 9
+    Cross    Male  
+    Round    Female
+    ArrowOut Female
+    ArrowOut Male  
+
+Tile position 7 : Up      Unique Tile ID: 14
+    ArrowOut Male  
+    ArrowOut Female
+    Round    Female
+    Round    Male  
+
+Tile position 8 : Up      Unique Tile ID: 13
+    Round    Male  
+    Round    Female
+    Cross    Female
+    Cross    Male  
+
+Tile position 9 : Up      Unique Tile ID: 15
+    Cross    Female
+    Round    Female
+    Round    Male  
+    ArrowOut Male  
+
+Tile position 10 : Up      Unique Tile ID: 6
+    Round    Female
+    ArrowOut Female
+    ArrowOut Male  
+    ArrowIn  Male  
+
+Tile position 11 : Up      Unique Tile ID: 11
+    ArrowOut Female
+    ArrowOut Female
+    Cross    Male  
+    Round    Male  
+
+Tile position 12 : Up      Unique Tile ID: 1
+    Cross    Female
+    ArrowOut Female
+    ArrowIn  Male  
+    ArrowIn  Male  
+
+Tile position 13 : Up      Unique Tile ID: 7
+    ArrowOut Male  
+    ArrowIn  Female
+    Round    Female
+    ArrowOut Male  
+
+Tile position 14 : Up      Unique Tile ID: 3
+    Round    Male  
+    ArrowOut Female
+    ArrowIn  Female
+    ArrowIn  Male  
+
+Tile position 15 : Up      Unique Tile ID: 8
+    Cross    Male  
+    ArrowIn  Female
+    Cross    Female
+    ArrowOut Male  
+
+
+Solution found [2]:
+
+Tile position 0 : Up      Unique Tile ID: 2
+    ArrowIn  Male  
+    Cross    Female
+    Round    Female
+    ArrowIn  Male  
+
+Tile position 1 : Up      Unique Tile ID: 13
+    Round    Male  
+    Round    Female
+    Cross    Female
+    Cross    Male  
+
+Tile position 2 : Up      Unique Tile ID: 11
+    Cross    Male  
+    Round    Male  
+    ArrowOut Female
+    ArrowOut Female
+
+Tile position 3 : Up      Unique Tile ID: 14
+    Round    Male  
+    ArrowOut Male  
+    ArrowOut Female
+    Round    Female
+
+Tile position 4 : Up      Unique Tile ID: 3
+    ArrowOut Female
+    ArrowIn  Female
+    ArrowIn  Male  
+    Round    Male  
+
+Tile position 5 : Up      Unique Tile ID: 12
+    ArrowIn  Female
+    Cross    Male  
+    Round    Male  
+    Round    Female
+
+Tile position 6 : Up      Unique Tile ID: 15
+    Round    Female
+    Round    Male  
+    ArrowOut Male  
+    Cross    Female
+
+Tile position 7 : Up      Unique Tile ID: 9
+    ArrowOut Male  
+    Cross    Male  
+    Round    Female
+    ArrowOut Female
+
+Tile position 8 : Up      Unique Tile ID: 7
+    ArrowOut Male  
+    ArrowOut Male  
+    ArrowIn  Female
+    Round    Female
+
+Tile position 9 : Up      Unique Tile ID: 1
+    ArrowIn  Male  
+    Cross    Female
+    ArrowOut Female
+    ArrowIn  Male  
+
+Tile position 10 : Up      Unique Tile ID: 8
+    ArrowOut Male  
+    Cross    Male  
+    ArrowIn  Female
+    Cross    Female
+
+Tile position 11 : Up      Unique Tile ID: 5
+    ArrowIn  Male  
+    Round    Male  
+    Cross    Female
+    Round    Female
+
+Tile position 12 : Up      Unique Tile ID: 10
+    Cross    Male  
+    ArrowIn  Male  
+    ArrowIn  Female
+    ArrowOut Female
+
+Tile position 13 : Up      Unique Tile ID: 6
+    ArrowOut Female
+    ArrowOut Male  
+    ArrowIn  Male  
+    Round    Female
+
+Tile position 14 : Up      Unique Tile ID: 0
+    Round    Male  
+    Round    Male  
+    ArrowOut Female
+    Round    Female
+
+Tile position 15 : Up      Unique Tile ID: 4
+    ArrowIn  Male  
+    Round    Male  
+    ArrowIn  Female
+    Cross    Female
+
+
+Solution found [3]:
+
+Tile position 0 : Up      Unique Tile ID: 3
+    Round    Male  
+    ArrowOut Female
+    ArrowIn  Female
+    ArrowIn  Male  
+
+Tile position 1 : Up      Unique Tile ID: 14
+    ArrowOut Female
+    Round    Female
+    Round    Male  
+    ArrowOut Male  
+
+Tile position 2 : Up      Unique Tile ID: 9
+    Round    Female
+    ArrowOut Female
+    ArrowOut Male  
+    Cross    Male  
+
+Tile position 3 : Up      Unique Tile ID: 1
+    ArrowIn  Male  
+    Cross    Female
+    ArrowOut Female
+    ArrowIn  Male  
+
+Tile position 4 : Up      Unique Tile ID: 13
+    Round    Female
+    Cross    Female
+    Cross    Male  
+    Round    Male  
+
+Tile position 5 : Up      Unique Tile ID: 15
+    Cross    Female
+    Round    Female
+    Round    Male  
+    ArrowOut Male  
+
+Tile position 6 : Up      Unique Tile ID: 5
+    Round    Female
+    ArrowIn  Male  
+    Round    Male  
+    Cross    Female
+
+Tile position 7 : Up      Unique Tile ID: 10
+    ArrowOut Female
+    Cross    Male  
+    ArrowIn  Male  
+    ArrowIn  Female
+
+Tile position 8 : Up      Unique Tile ID: 6
+    ArrowOut Male  
+    ArrowIn  Male  
+    Round    Female
+    ArrowOut Female
+
+Tile position 9 : Up      Unique Tile ID: 8
+    ArrowIn  Female
+    Cross    Female
+    ArrowOut Male  
+    Cross    Male  
+
+Tile position 10 : Up      Unique Tile ID: 11
+    ArrowOut Female
+    ArrowOut Female
+    Cross    Male  
+    Round    Male  
+
+Tile position 11 : Up      Unique Tile ID: 4
+    Cross    Female
+    ArrowIn  Male  
+    Round    Male  
+    ArrowIn  Female
+
+Tile position 12 : Up      Unique Tile ID: 7
+    Round    Female
+    ArrowOut Male  
+    ArrowOut Male  
+    ArrowIn  Female
+
+Tile position 13 : Up      Unique Tile ID: 2
+    Round    Female
+    ArrowIn  Male  
+    ArrowIn  Male  
+    Cross    Female
+
+Tile position 14 : Up      Unique Tile ID: 12
+    ArrowIn  Female
+    Cross    Male  
+    Round    Male  
+    Round    Female
+
+Tile position 15 : Up      Unique Tile ID: 0
+    Round    Male  
+    Round    Male  
+    ArrowOut Female
+    Round    Female
+
+
+Solution found [4]:
+
+Tile position 0 : Up      Unique Tile ID: 5
+    Round    Male  
+    Cross    Female
+    Round    Female
+    ArrowIn  Male  
+
+Tile position 1 : Up      Unique Tile ID: 13
+    Round    Male  
+    Round    Female
+    Cross    Female
+    Cross    Male  
+
+Tile position 2 : Up      Unique Tile ID: 11
+    Cross    Male  
+    Round    Male  
+    ArrowOut Female
+    ArrowOut Female
+
+Tile position 3 : Up      Unique Tile ID: 14
+    Round    Male  
+    ArrowOut Male  
+    ArrowOut Female
+    Round    Female
+
+Tile position 4 : Up      Unique Tile ID: 3
+    ArrowOut Female
+    ArrowIn  Female
+    ArrowIn  Male  
+    Round    Male  
+
+Tile position 5 : Up      Unique Tile ID: 12
+    ArrowIn  Female
+    Cross    Male  
+    Round    Male  
+    Round    Female
+
+Tile position 6 : Up      Unique Tile ID: 15
+    Round    Female
+    Round    Male  
+    ArrowOut Male  
+    Cross    Female
+
+Tile position 7 : Up      Unique Tile ID: 9
+    ArrowOut Male  
+    Cross    Male  
+    Round    Female
+    ArrowOut Female
+
+Tile position 8 : Up      Unique Tile ID: 7
+    ArrowOut Male  
+    ArrowOut Male  
+    ArrowIn  Female
+    Round    Female
+
+Tile position 9 : Up      Unique Tile ID: 1
+    ArrowIn  Male  
+    Cross    Female
+    ArrowOut Female
+    ArrowIn  Male  
+
+Tile position 10 : Up      Unique Tile ID: 8
+    ArrowOut Male  
+    Cross    Male  
+    ArrowIn  Female
+    Cross    Female
+
+Tile position 11 : Up      Unique Tile ID: 2
+    ArrowIn  Male  
+    ArrowIn  Male  
+    Cross    Female
+    Round    Female
+
+Tile position 12 : Up      Unique Tile ID: 10
+    Cross    Male  
+    ArrowIn  Male  
+    ArrowIn  Female
+    ArrowOut Female
+
+Tile position 13 : Up      Unique Tile ID: 6
+    ArrowOut Female
+    ArrowOut Male  
+    ArrowIn  Male  
+    Round    Female
+
+Tile position 14 : Up      Unique Tile ID: 0
+    Round    Male  
+    Round    Male  
+    ArrowOut Female
+    Round    Female
+
+Tile position 15 : Up      Unique Tile ID: 4
+    ArrowIn  Male  
+    Round    Male  
+    ArrowIn  Female
+    Cross    Female
+
+
+Solution found [5]:
+
+Tile position 0 : Up      Unique Tile ID: 6
+    ArrowIn  Male  
+    Round    Female
+    ArrowOut Female
+    ArrowOut Male  
+
+Tile position 1 : Up      Unique Tile ID: 3
+    ArrowOut Female
+    ArrowIn  Female
+    ArrowIn  Male  
+    Round    Male  
+
+Tile position 2 : Up      Unique Tile ID: 10
+    ArrowIn  Female
+    ArrowOut Female
+    Cross    Male  
+    ArrowIn  Male  
+
+Tile position 3 : Up      Unique Tile ID: 7
+    ArrowOut Male  
+    ArrowIn  Female
+    Round    Female
+    ArrowOut Male  
+
+Tile position 4 : Up      Unique Tile ID: 4
+    Round    Male  
+    ArrowIn  Female
+    Cross    Female
+    ArrowIn  Male  
+
+Tile position 5 : Up      Unique Tile ID: 9
+    Cross    Male  
+    Round    Female
+    ArrowOut Female
+    ArrowOut Male  
+
+Tile position 6 : Up      Unique Tile ID: 15
+    ArrowOut Male  
+    Cross    Female
+    Round    Female
+    Round    Male  
+
+Tile position 7 : Up      Unique Tile ID: 5
+    Cross    Female
+    Round    Female
+    ArrowIn  Male  
+    Round    Male  
+
+Tile position 8 : Up      Unique Tile ID: 12
+    Round    Male  
+    Round    Female
+    ArrowIn  Female
+    Cross    Male  
+
+Tile position 9 : Up      Unique Tile ID: 2
+    ArrowIn  Male  
+    Cross    Female
+    Round    Female
+    ArrowIn  Male  
+
+Tile position 10 : Up      Unique Tile ID: 0
+    Round    Male  
+    ArrowOut Female
+    Round    Female
+    Round    Male  
+
+Tile position 11 : Up      Unique Tile ID: 11
+    Round    Male  
+    ArrowOut Female
+    ArrowOut Female
+    Cross    Male  
+
+Tile position 12 : Up      Unique Tile ID: 14
+    ArrowOut Male  
+    ArrowOut Female
+    Round    Female
+    Round    Male  
+
+Tile position 13 : Up      Unique Tile ID: 13
+    Round    Male  
+    Round    Female
+    Cross    Female
+    Cross    Male  
+
+Tile position 14 : Up      Unique Tile ID: 8
+    ArrowIn  Female
+    Cross    Female
+    ArrowOut Male  
+    Cross    Male  
+
+Tile position 15 : Up      Unique Tile ID: 1
+    ArrowIn  Male  
+    Cross    Female
+    ArrowOut Female
+    ArrowIn  Male  
+
+
+Solution found [6]:
+
+Tile position 0 : Up      Unique Tile ID: 15
+    ArrowOut Male  
+    Cross    Female
+    Round    Female
+    Round    Male  
+
+Tile position 1 : Up      Unique Tile ID: 12
+    Round    Male  
+    Round    Female
+    ArrowIn  Female
+    Cross    Male  
+
+Tile position 2 : Up      Unique Tile ID: 2
+    ArrowIn  Male  
+    Cross    Female
+    Round    Female
+    ArrowIn  Male  
+
+Tile position 3 : Up      Unique Tile ID: 4
+    Round    Male  
+    ArrowIn  Female
+    Cross    Female
+    ArrowIn  Male  
+
+Tile position 4 : Up      Unique Tile ID: 3
+    ArrowOut Female
+    ArrowIn  Female
+    ArrowIn  Male  
+    Round    Male  
+
+Tile position 5 : Up      Unique Tile ID: 8
+    ArrowIn  Female
+    Cross    Female
+    ArrowOut Male  
+    Cross    Male  
+
+Tile position 6 : Up      Unique Tile ID: 9
+    ArrowOut Female
+    ArrowOut Male  
+    Cross    Male  
+    Round    Female
+
+Tile position 7 : Up      Unique Tile ID: 0
+    Round    Male  
+    Round    Male  
+    ArrowOut Female
+    Round    Female
+
+Tile position 8 : Up      Unique Tile ID: 11
+    Cross    Male  
+    Round    Male  
+    ArrowOut Female
+    ArrowOut Female
+
+Tile position 9 : Up      Unique Tile ID: 5
+    Round    Male  
+    Cross    Female
+    Round    Female
+    ArrowIn  Male  
+
+Tile position 10 : Up      Unique Tile ID: 13
+    Round    Male  
+    Round    Female
+    Cross    Female
+    Cross    Male  
+
+Tile position 11 : Up      Unique Tile ID: 10
+    Cross    Male  
+    ArrowIn  Male  
+    ArrowIn  Female
+    ArrowOut Female
+
+Tile position 12 : Up      Unique Tile ID: 6
+    ArrowIn  Male  
+    Round    Female
+    ArrowOut Female
+    ArrowOut Male  
+
+Tile position 13 : Up      Unique Tile ID: 1
+    Cross    Female
+    ArrowOut Female
+    ArrowIn  Male  
+    ArrowIn  Male  
+
+Tile position 14 : Up      Unique Tile ID: 7
+    ArrowOut Male  
+    ArrowIn  Female
+    Round    Female
+    ArrowOut Male  
+
+Tile position 15 : Up      Unique Tile ID: 14
+    ArrowOut Male  
+    ArrowOut Female
+    Round    Female
+    Round    Male  
+End of sequence ...

@@ -3,17 +3,19 @@
 #define PUZZLE_H_
 int lastAPindex();
 int smallestHVindex(int offset);
-int swap(int x, int y);
-int sorttail(int offset);
+void swap(int x, int y);
+void sorttail(int offset);
 char *smooth_up_name(bool SmoothSideUp);
-void print_tile(int tile_index);
-void initialiseTile(int tile_index);
-void initialiseAllTiles();
-void reset_tile(int tile_index);
-void rotate(int tile_index);
-int stepSequenceEarly(int offset);
+void print_tile(int pos);
+void initialiseTile(int pos);
+void initialiseTileSpec();
+void reset(int pos);
+void rotate(int pos);
+int stepSequenceOffset(int offset);
 int stepSequence();
-void flip(int tile_index);
-int checkfit(int tile_index);
-
+void flip(int pos);
+bool checkTile(int pos);
+bool sidesMatch(int tile1, int side1, int tile2, int side2);
+bool nudge(int pos);
+bool nudgeable(int pos);
 #endif

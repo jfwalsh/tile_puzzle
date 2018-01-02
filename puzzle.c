@@ -40,20 +40,36 @@ Rules:  connector[0][0]  N/A
 
 #include "puzzle.h"
 
+#define DEBUG false 
+
 /* Typedefs */
 typedef enum {ArrowIn, ArrowOut, Cross, Round } Connector;
 typedef enum {Female, Male} Gender ;
 
+static struct Tile { 	Connector c[4];
+				Gender g[4];
+				bool isUp;
+				int rotation;
+				int id;
+			} tileSpec[16], tile[16];
+
+bool stopOnFirstSolution = false;
+bool useFlippedTiles = false;
 
 /* Globals */
-static Connector connector[16][4] ;   	// 16 Tiles, 4 Sides each, index refers to position
-static Gender    gender[16][4]    ;   	// Ditto
-static bool      smooth_side_up[16] ; 	// Each time is eather smooth side up or not.
-static int 		 tile_id[16] ;   		// unique id written on tile, 0-15, moves with tile
-                           			  	// as tiles are rearranged.
-static int tileOrder[16]; 				// Tile order - starts 0-15 ends 15-0 as order stepped
+// static Connector connector[16][4] ;   	// 16 Tiles, 4 Sides each, index refers to position
+// static Gender    gender[16][4]    ;   	// Ditto
+// static int  	 rotation[16]; 			// 0 to 3, 0 is original, steps once each time rotated. 
+// static bool      smooth_side_up[16] ; 	// Each time is eather smooth side up or not.
+// static int 		 tile_id[16] ;   		// unique id written on tile, 0-15, points to index
+                           			  	// of tileOrder.
+// tileOrder[n] -> which tile is at position n
+// tile_id[n]   -> where is tile n in array tileOrder
 
 
+static int 		tileOrder[16]; 			// Tile order - starts 0-15 ends 15-0 as order stepped
+
+static int 	solutionCount = 0 ;
 
 /* Functions */
 
@@ -94,18 +110,24 @@ int smallestHVindex(int offset)
 	}
 }
 
-// swap tiles at indices x and y
-int swap(int x, int y)
-{
-	int temp;
-	temp = tileOrder[y];
-	tileOrder[y] = tileOrder[x];
-	tileOrder[x] = temp;
-	return 0;
+// swap tiles at positions x and y
+void swap(int x, int y)
+{	// https://www.geeksforgeeks.org/are-array-members-deeply-copied/ - should work
+	struct Tile tempTile;
+	tempTile = tile[x];
+	tile[x] = tile[y];
+	tile[y] = tempTile;
+	// now update tileOrder as well
+	int i;
+	i = tileOrder[x];
+	tileOrder[x] = tileOrder[y];
+	tileOrder[y] = i; 
 }
 
 // sorttail - reorder the values in ascending order from offset onwards
-int sorttail(int offset) {
+//            also reset tiles in tail to initial state.
+void sorttail(int offset) 
+{
 	for (int i=offset; i< 16; i++) {
 		// find smallest value
 		int sv = tileOrder[i];	// initialise at first, then scan for smaller
@@ -121,7 +143,10 @@ int sorttail(int offset) {
 			swap(i, svi);
 		}		
 	}
-	return 0;
+	// now tail is sorted, we need to reset each tile in the tail to initial state
+	for (int i=offset; i< 16; i++) {
+		reset(i);
+	}
 }
 
 // step to next iteration
@@ -131,6 +156,7 @@ int stepSequence()
 	if (lastAPix >= 0) {
 		int shvix = smallestHVindex(lastAPix) ;
 		swap(lastAPix,shvix) ;
+		reset(lastAPix) ;
 		sorttail(lastAPix+1) ;
 		return 1 ;
 	} else {
@@ -141,12 +167,16 @@ int stepSequence()
 // step to next iteration but force change at specific offset
 // this can dramatically speed up the search process
 // This forces the tile at index offset to change
-int stepSequenceEarly(int offset)
+int stepSequenceOffset(int offset)
 {
 	// can we find a higher value in the tail?
 	int shvix = smallestHVindex(offset) ;
+	if (DEBUG){
+		printf("170 - offset is %d, shvix is %d \n", offset, shvix);
+	}
 	if (shvix != offset) {
 		swap(offset,shvix) ;
+		reset(offset) ;
 		sorttail(offset+1) ;		
 		return 1;
 	}
@@ -156,40 +186,50 @@ int stepSequenceEarly(int offset)
 	if (lastAPix >= 0) {
 		int shvix = smallestHVindex(lastAPix) ;
 		swap(lastAPix,shvix) ;
+		reset(lastAPix) ;
 		sorttail(lastAPix+1) ;
 		return 1;
 	} else {
 		return (-1) ;
 	}
-
 }
 
-void rotate(int tile_index)
+void rotate(int pos)
 {
-	// rotate sides of tile 90 degrees clockwise
+	// rotate sides of tile at pos 90 degrees clockwise
 	Connector temp_connector;
 	Gender    temp_gender;
 
-	temp_connector = connector[tile_index][0] ;
-	connector[tile_index][0] = connector[tile_index][3] ;
-	connector[tile_index][3] = connector[tile_index][2] ;
-	connector[tile_index][2] = connector[tile_index][1] ;	
-	connector[tile_index][1] = temp_connector ;
+	if (DEBUG) {
+		printf("in rotate(), for tile pos %d \n",pos) ;
+	}
 
-	temp_gender = gender[tile_index][0] ;
-	gender[tile_index][0] = gender[tile_index][3] ;
-	gender[tile_index][3] = gender[tile_index][2] ;
-	gender[tile_index][2] = gender[tile_index][1] ;
-	gender[tile_index][1] = temp_gender ;
+	temp_connector = tile[pos].c[0] ;
+	tile[pos].c[0] = tile[pos].c[1] ;
+	tile[pos].c[1] = tile[pos].c[2] ;
+	tile[pos].c[2] = tile[pos].c[3] ;
+	tile[pos].c[3] = temp_connector ;
 
+	temp_gender    = tile[pos].g[0] ;
+	tile[pos].g[0] = tile[pos].g[1] ;
+	tile[pos].g[1] = tile[pos].g[2] ;
+	tile[pos].g[2] = tile[pos].g[3] ;
+	tile[pos].g[3] = temp_gender ;
+
+	// rotate the tile clockwise, back to 0 if past 3.
+	tile[pos].rotation = (tile[pos].rotation + 1 ) % 4 ;
+	if (DEBUG) {
+		printf("new rotation value: %d \n", tile[pos].rotation);
+	}
 }
 
-void reset_tile(int tile_index)
-{	// maybe more needed - but undo any rotations.
-	initialiseTile(tile_index);
+void reset(int pos)
+{	// find tile id and reload tile spec - the id value should not change.
+	int index = tile[pos].id ;
+	tile[pos] = tileSpec[index];
 }
 
-char *connector_name(Connector connectorval)
+char *connectorName(Connector connectorval)
 {
 	if (connectorval == ArrowIn) return "ArrowIn";
 	else if (connectorval == ArrowOut) return "ArrowOut";
@@ -198,7 +238,7 @@ char *connector_name(Connector connectorval)
 	else return "Null";
 }
 
-char *gender_name(Gender genderval)
+char *genderName(Gender genderval)
 {
 	if (genderval == Female) {
 		return "Female";
@@ -209,160 +249,193 @@ char *gender_name(Gender genderval)
 	}
 }
 
-char *smooth_up_name(bool SmoothSideUp)
+char *upOrDownName(bool isUp)
 {
-	if (SmoothSideUp) {
+	if (isUp) {
 		return "Up" ;
 	} else {
 		return "Down" ;
 	}
 }
 
-void flip(int tile_index)
+void flip(int pos)
 {
 	// flip tile by swapping sides 0 with 3 and side 1 with 2 and toggling smooth_side_up
+	// assume that tile will be reset before flipping?
 	Connector temp_connector;
 	Gender    temp_gender;
 
-	temp_connector = connector[tile_index][0];
-	connector[tile_index][0] = connector[tile_index][3];
-	connector[tile_index][3] = temp_connector;
+	temp_connector = tile[pos].c[0];
+	tile[pos].c[0] = tile[pos].c[3];
+	tile[pos].c[3] = temp_connector;
 
-	temp_connector = connector[tile_index][1];
-	connector[tile_index][1] = connector[tile_index][2];
-	connector[tile_index][2] = temp_connector;
-
-	temp_gender = gender[tile_index][0];
-	gender[tile_index][0] = gender[tile_index][3];
-	gender[tile_index][3] = temp_gender;
-
-	temp_gender = gender[tile_index][1];
-	gender[tile_index][1] = gender[tile_index][2];
-	gender[tile_index][2] = temp_gender;
-
-	smooth_side_up[tile_index] = !smooth_side_up[tile_index] ;
-
-}
-
-void print_tile(int tile_index)
-/* print the edge connector & gender for a specific tile */
-{
-	printf("\nTile %d : %-4s    ", tile_index, smooth_up_name(smooth_side_up[tile_index])) ;
-	printf("Unique Tile ID: %d\n", tile_id[tile_index]) ;
-	for (int i = 0; i < 4; i++) {
-		printf("    %-8s %-6s\n", connector_name(connector[tile_index][i]), gender_name(gender[tile_index][i])) ;
-	}
-}
-
-void initialiseAllTiles()
-{
-	int j;
-	for (j=0; j<16; j++) {
-		tileOrder[j] = j;
-		initialiseTile(j);
-	}
-}
-
-void initialiseTile(int tile_index)
-{	/* Initialise the data based on actual pieces */
-
-	// Just about all the variables are global, except for i 
-	// which increments and is used just to simplify code copy/paste.
-
-	int i = tile_index ;
-	tile_id[i] = i ;
-	smooth_side_up[i] = true ;
+	temp_connector = tile[pos].c[1];
+	tile[pos].c[1] = tile[pos].c[2];
+	tile[pos].c[2] = temp_connector;
 	
-	if (i == 0) {
-		connector[i][0] = Round ;		gender[i][0] = Male ;
-		connector[i][1] = ArrowOut ;	gender[i][1] = Female ;
-		connector[i][2] = Round ;		gender[i][2] = Female ;
-		connector[i][3] = Round ;		gender[i][3] = Male ;
-	} else if (i == 1) {
-		connector[i][0] = ArrowIn ;		gender[i][0] = Male ;
-		connector[i][1] = Cross ;		gender[i][1] = Female ;
-		connector[i][2] = ArrowOut ;	gender[i][2] = Female ;
-		connector[i][3] = ArrowIn ;		gender[i][3] = Male ;
-	} else if (i == 2 ) {
-		connector[i][0] = ArrowIn ;		gender[i][0] = Male ;
-		connector[i][1] = Cross ;		gender[i][1] = Female ;
-		connector[i][2] = Round ;		gender[i][2] = Female ;
-		connector[i][3] = ArrowIn ;		gender[i][3] = Male ;
-	} else if (i ==3) {
-		connector[i][0] = Round ;		gender[i][0] = Male ;
-		connector[i][1] = ArrowOut ;	gender[i][1] = Female ;
-		connector[i][2] = ArrowIn ;		gender[i][2] = Female ;
-		connector[i][3] = ArrowIn ;		gender[i][3] = Male ;
-	} else if (i == 4) {
-		connector[i][0] = Round ;		gender[i][0] = Male ;
-		connector[i][1] = ArrowIn ;		gender[i][1] = Female ;
-		connector[i][2] = Cross ;		gender[i][2] = Female ;
-		connector[i][3] = ArrowIn ;		gender[i][3] = Male ;
-	} else if (i == 5) {
-		connector[i][0] = Round ;		gender[i][0] = Male ;
-		connector[i][1] = Cross ;		gender[i][1] = Female ;
-		connector[i][2] = Round ;		gender[i][2] = Female ;
-		connector[i][3] = ArrowIn ;		gender[i][3] = Male ;
-	} else if (i == 6) {
-		connector[i][0] = ArrowIn ;		gender[i][0] = Male ;
-		connector[i][1] = Round ;		gender[i][1] = Female ;
-		connector[i][2] = ArrowOut ;	gender[i][2] = Female ;
-		connector[i][3] = ArrowOut ;	gender[i][3] = Male ;
-	} else if (i == 7) {
-		connector[i][0] = ArrowOut ;	gender[i][0] = Male ;
-		connector[i][1] = ArrowIn ;		gender[i][1] = Female ;
-		connector[i][2] = Round ;		gender[i][2] = Female ;
-		connector[i][3] = ArrowOut ;	gender[i][3] = Male ;
-	} else if (i == 8) {
-		connector[i][0] = Cross ;		gender[i][0] = Male ;
-		connector[i][1] = ArrowIn ;		gender[i][1] = Female ;
-		connector[i][2] = Cross ;		gender[i][2] = Female ;
-		connector[i][3] = ArrowOut ;	gender[i][3] = Male ;
-	} else if (i == 9) {
-		connector[i][0] = Cross ;		gender[i][0] = Male ;
-		connector[i][1] = Round ;		gender[i][1] = Female ;
-		connector[i][2] = ArrowOut ;	gender[i][2] = Female ;
-		connector[i][3] = ArrowOut ;	gender[i][3] = Male ;
-	} else if (i == 10){
-		connector[i][0] = ArrowIn ;		gender[i][0] = Male ;
-		connector[i][1] = ArrowIn ;		gender[i][1] = Female ;
-		connector[i][2] = ArrowOut ;	gender[i][2] = Female ;
-		connector[i][3] = Cross ;		gender[i][3] = Male ;
-	} else if (i == 11) {
-		connector[i][0] = Round ;		gender[i][0] = Male ;
-		connector[i][1] = ArrowOut ;	gender[i][1] = Female ;
-		connector[i][2] = ArrowOut ;	gender[i][2] = Female ;
-		connector[i][3] = Cross ;		gender[i][3] = Male ;
-	} else if (i == 12) {	
-		connector[i][0] = Round ;		gender[i][0] = Male ;
-		connector[i][1] = Round ;		gender[i][1] = Female ;
-		connector[i][2] = ArrowIn ;		gender[i][2] = Female ;
-		connector[i][3] = Cross ;		gender[i][3] = Male ;
-	} else if (i == 13) {
-		connector[i][0] = Round ;		gender[i][0] = Male ;
-		connector[i][1] = Round ;		gender[i][1] = Female ;
-		connector[i][2] = Cross ;		gender[i][2] = Female ;
-		connector[i][3] = Cross ;		gender[i][3] = Male ;
-	} else if (i == 14) {
-		connector[i][0] = ArrowOut ;	gender[i][0] = Male ;
-		connector[i][1] = ArrowOut ;	gender[i][1] = Female ;
-		connector[i][2] = Round ;		gender[i][2] = Female ;
-		connector[i][3] = Round ;		gender[i][3] = Male ;
-	} else if (i == 15) {
-		connector[i][0] = ArrowOut ;	gender[i][0] = Male ;
-		connector[i][1] = Cross ;		gender[i][1] = Female ;
-		connector[i][2] = Round ;		gender[i][2] = Female ;
-		connector[i][3] = Round ;		gender[i][3] = Male ;
+	temp_gender = tile[pos].g[0];
+	tile[pos].g[0] = tile[pos].g[3];
+	tile[pos].g[3] = temp_gender;
+	
+	temp_gender = tile[pos].g[1];
+	tile[pos].g[1] = tile[pos].g[2];
+	tile[pos].g[2] = temp_gender;
+
+	tile[pos].isUp = !(tile[pos].isUp) ;
+
+}
+
+bool nudgeable(int pos)
+{
+	if (tile[pos].rotation < 3) {
+		return true;
+	} 
+	if (useFlippedTiles && tile[pos].isUp) {
+		return true;
+	}
+	return false;
+}
+
+bool nudge(int pos)
+{
+	if (nudgeable(pos)) {
+		if (tile[pos].rotation < 3) {
+			rotate(pos);
+		} else {
+			reset(pos);
+			flip(pos);
+		}
+		return true;
 	} else {
-		printf("We should never get here: illegal index in initialiseTile()");
-		exit(1);
+		return false;
 	}
+}
+
+void printTile(int pos)
+/* print the edge connector & gender for a tile is a specified position */
+{
+	printf("\nTile position %d : %-4s    ", pos, upOrDownName(tile[pos].isUp)) ;
+	printf("Unique Tile ID: %d\n", tile[pos].id ) ;
+	for (int i = 0; i < 4; i++) {
+		printf("    %-8s %-6s\n", connectorName(tile[pos].c[i]), genderName(tile[pos].g[i]) ) ;
+	}
+}
+
+void printSolution()
+{
+	printf("\n\nSolution found [%d]:\n",solutionCount);
+	for (int i=0; i < 16; i++) {
+		printTile(i);
+	}
+}
+
+void initialiseTiles()
+{	// initialiase tileOrder and tile[].
+	for (int i=0; i<16; i++) {
+		tileOrder[i] = i;
+		tile[i] = tileSpec[i];
+	}
+}
+
+void initialiseTileSpec()
+{	/* Initialise the data based on actual pieces */
 	
+	for (int i = 0; i < 16; i++) {
+		
+		tileSpec[i].id = i;
+		tileSpec[i].rotation = 0;
+		tileSpec[i].isUp = true ;
+		
+		if (i == 0) {
+			tileSpec[i].c[0] = Round ;			tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = ArrowOut ;		tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = Round ;			tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = Round ;			tileSpec[i].g[3] = Male ;
+		} else if (i == 1) {
+			tileSpec[i].c[0] = ArrowIn ;		tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = Cross ;			tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = ArrowOut ;		tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = ArrowIn ;		tileSpec[i].g[3] = Male ;
+		} else if (i == 2 ) {
+			tileSpec[i].c[0] = ArrowIn ;		tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = Cross ;			tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = Round ;			tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = ArrowIn ;		tileSpec[i].g[3] = Male ;
+		} else if (i ==3) {
+			tileSpec[i].c[0] = Round ;			tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = ArrowOut ;		tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = ArrowIn ;		tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = ArrowIn ;		tileSpec[i].g[3] = Male ;
+		} else if (i == 4) {
+			tileSpec[i].c[0] = Round ;			tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = ArrowIn ;		tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = Cross ;			tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = ArrowIn ;		tileSpec[i].g[3] = Male ;
+		} else if (i == 5) {
+			tileSpec[i].c[0] = Round ;			tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = Cross ;			tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = Round ;			tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = ArrowIn ;		tileSpec[i].g[3] = Male ;
+		} else if (i == 6) {
+			tileSpec[i].c[0] = ArrowIn ;		tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = Round ;			tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = ArrowOut ;		tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = ArrowOut ;		tileSpec[i].g[3] = Male ;
+		} else if (i == 7) {
+			tileSpec[i].c[0] = ArrowOut ;		tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = ArrowIn ;		tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = Round ;			tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = ArrowOut ;		tileSpec[i].g[3] = Male ;
+		} else if (i == 8) {
+			tileSpec[i].c[0] = Cross ;			tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = ArrowIn ;		tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = Cross ;			tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = ArrowOut ;		tileSpec[i].g[3] = Male ;
+		} else if (i == 9) {
+			tileSpec[i].c[0] = Cross ;			tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = Round ;			tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = ArrowOut ;		tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = ArrowOut ;		tileSpec[i].g[3] = Male ;
+		} else if (i == 10){
+			tileSpec[i].c[0] = ArrowIn ;		tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = ArrowIn ;		tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = ArrowOut ;		tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = Cross ;			tileSpec[i].g[3] = Male ;
+		} else if (i == 11) {
+			tileSpec[i].c[0] = Round ;			tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = ArrowOut ;		tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = ArrowOut ;		tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = Cross ;			tileSpec[i].g[3] = Male ;
+		} else if (i == 12) {	
+			tileSpec[i].c[0] = Round ;			tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = Round ;			tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = ArrowIn ;		tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = Cross ;			tileSpec[i].g[3] = Male ;
+		} else if (i == 13) {
+			tileSpec[i].c[0] = Round ;			tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = Round ;			tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = Cross ;			tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = Cross ;			tileSpec[i].g[3] = Male ;
+		} else if (i == 14) {
+			tileSpec[i].c[0] = ArrowOut ;		tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = ArrowOut ;		tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = Round ;			tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = Round ;			tileSpec[i].g[3] = Male ;
+		} else if (i == 15) {
+			tileSpec[i].c[0] = ArrowOut ;		tileSpec[i].g[0] = Male ;
+			tileSpec[i].c[1] = Cross ;			tileSpec[i].g[1] = Female ;
+			tileSpec[i].c[2] = Round ;			tileSpec[i].g[2] = Female ;
+			tileSpec[i].c[3] = Round ;			tileSpec[i].g[3] = Male ;
+		} else {
+			printf("We should never get here: illegal index in initialiseTile()");
+			exit(1);
+		}
+	}
 }
 
 int printTileOrder()
 {
-	printf("\nTiles are in following order: "	);
+	printf("\nTile order: "	);
 	for (int i=0; i < 16; i++)
 	{
 		printf("%d ", tileOrder[i]);
@@ -370,46 +443,251 @@ int printTileOrder()
 	printf("\n\n");
 }
 
-int checkfit(int tile_index){
 
-	/* put stuff here to check connections for this tile to previous tiles */
-	return 0;
+bool sidesMatch(int pos1, int side1, int pos2, int side2) 
+{
+		bool result;
+		if ((tile[pos1].g[side1] != tile[pos2].g[side2]) && (tile[pos1].c[side1] == tile[pos2].c[side2])) {
+			result = true;
+		} else {
+			result = false;
+		}
+		return result;
 }
 
+bool checkTile(int pos)
+{
+	// return true if tile fits with all earlier tiles. 
+	
+	bool result;
+
+	switch (pos) {
+
+		case 0:
+			// first tile is always ok
+			result = true;
+			break;
+			
+		case 1:
+			// check tile 1 side 3 against tile 0 side 1
+			if (sidesMatch(1,3,0,1)) {
+				result = true;
+			} else {
+				result = false;
+			}
+			break;
+			
+		case 2:
+			// check tile 2 side 0 against tile 1 side 2
+			if (sidesMatch(2,0,1,2)) {
+				result = true;
+			} else {
+				result = false;
+			}
+			break;
+			
+		case 3:
+			// check tile 3 side 1 against tile 2 side 3, and 
+			// check tile 3 side 0 against tile 0 side 2
+			if (sidesMatch(3,1,2,3) && sidesMatch(3,0,0,2)) {
+				result = true;
+			} else {
+				result = false;
+			}			 
+			break;
+			 
+		case 4:
+			// check tile 4 side 3 against tile 1 side 1 
+			if  (sidesMatch(4,3,1,1)) {   
+				result = true;
+			} else {
+				result = false;
+			}			 
+			break;
+			
+		case 5:
+			// check tile 5 side 0 against tile 4 side 2 and tile 5 side 3 v tile 2 side 1
+			if (sidesMatch(5,0,4,2) && sidesMatch(5,3,2,1)) {
+				result = true;
+			} else {
+				result = false;
+			}			 
+			break;
+			
+		case 6:
+			// check tile 6 side 0 against tile 5 side 2 
+			if  (sidesMatch(6,0,5,2)) {   
+				result = true;
+			} else {
+				result = false;
+			}			 
+			break;
+			
+		case 7:
+			// check tile 7 side 0 against tile 2 side 2 and tile 7 side 1 v tile 6 side 3
+			if (sidesMatch(7,0,2,2) && sidesMatch(7,1,6,3)) {
+				result = true;
+			} else {
+				result = false;
+			}			 
+			break;
+			
+		case 8:
+			// check tile 8 side 0 against tile 3 side 2 and tile 8 side 1 v tile 7 side 3
+			if (sidesMatch(8,0,3,2) && sidesMatch(8,1,7,3)) {
+				result = true;
+			} else {
+				result = false;
+			}			 
+			break;
+			
+		case 9:
+			// check tile 9 side 3 against tile 4 side 1 
+			if  (sidesMatch(9,3,4,1)) {   
+				result = true;
+			} else {
+				result = false;
+			}			 
+			break;
+			
+		case 10:
+			// check tile 10 side 0 against tile 9 side 2 and tile 10 side 3 v tile 5 side 1
+			if (sidesMatch(10,0,9,2) && sidesMatch(10,3,5,1)) {
+				result = true;
+			} else {
+				result = false;
+			}			 
+			break;
+			
+		case 11:
+			// check tile 11 side 0 against tile 10 side 2 and tile 11 side 3 v tile 6 side 1
+			if (sidesMatch(11,0,10,2) && sidesMatch(11,3,6,1)) {
+				result = true;
+			} else {
+				result = false;
+			}			 
+			break;
+			
+		case 12:
+			// check tile 12 side 0 against tile 11 side 2
+			if (sidesMatch(12,0,11,2)) {
+				result = true;
+			} else {
+				result = false;
+			}			 
+			break;
+			
+		case 13:
+			// check tile 13 side 0 against tile 6 side 2 and tile 13 side 1 v tile 12 side 3
+			if (sidesMatch(13,0,6,2) && sidesMatch(13,1,12,3)) {
+				result = true;
+			} else {
+				result = false;
+			}			 
+			break;
+			
+		case 14:
+			// check tile 14 side 0 against tile 7 side 2 and tile 14 side 1 v tile 13 side 3
+			if (sidesMatch(14,0,7,2) && sidesMatch(14,1,13,3)) {
+				result = true;
+			} else {
+				result = false;
+			}			 
+			break;
+			
+		case 15:
+			// check tile 15 side 0 against tile 8 side 2 and tile 15 side 1 v tile 14 side 3
+			if (sidesMatch(15,0,8,2) && sidesMatch(15,1,14,3)) {
+				result = true;
+			} else {
+				result = false;
+			}			 
+			break;
+
+		default:
+			break;
+	}
+	return result;
+}
+
+int checkForSolution()
+{
+	int i;
+	for (i=1; i < 16; i++) {
+		if (!checkTile(i)) { // if mismatch found return first tile where this occurs
+			return i;
+		}
+	}
+	return 0; // solution found!
+}
 
 /* main */
 
 int main(int argc, char **argv) /* args will be ignored for now */
 {
-	int tile, rot;
-	bool flipped; 
+	int n, result;
+	initialiseTileSpec();
+	initialiseTiles();
 
-	initialiseAllTiles();
+	// printTileOrder();
+	
+	while (true) {
+		n = checkForSolution();
+		if (DEBUG) {
+			printf("Checking for solution: result is %d\n",n );
+		}
+		if (n == 0) {
+			solutionCount++;
+			printSolution();
+			if (stopOnFirstSolution) {
+				break;
+			} else {
+				n = 15;
+			}
+		} 
+		if (nudge(n)) {
+			continue;
+		} else {
+			if (n == 15) {
+				result = stepSequence();
+			} else { 
+				result = stepSequenceOffset(n);
+			}
+			if (result == 1) {
+				if (DEBUG) {
+					printTileOrder();
+				}
+				continue;
+			} else {
+				printf("End of sequence ...\n");
+				break;
+			}
 
+		}
 
-/* Need to do the 0,1,2,3 ... 15 increase thing until 15, 14, 13 .. 0  is reached 
-	   And find how to jump the sequence to save time too.
-*/ 
+	}
+
 
 /*
-	printf("Here are the tiles that will be analysed for 4x4 grid:\n\n");
+	printf("Here is the current tiles layout:\n\n");
 
 	for (int i = 0; i < 16; i++) {
-		print_tile(i);
+		printTile(i);
 	}
 
 	printf("\n\n");
 */
 
 
+
 /*
 	printf("Here is the first tile flipped then rotated:\n\n");
 
-	print_tile(0);
+	printTile(0);
 	flip(0);
-	print_tile(0);
+	printTile(0);
 	rotate(0);
-	print_tile(0);
+	printTile(0);
 */	
 
 /*
